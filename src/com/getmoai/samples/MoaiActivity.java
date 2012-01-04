@@ -32,6 +32,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -107,13 +108,25 @@ public class MoaiActivity extends Activity implements SensorEventListener {
     	// ask for url to lua file
     	final AlertDialog.Builder alert = new AlertDialog.Builder(this);
     	final EditText input = new EditText(this);
-    	input.setText("http://www.innovationtech.co.uk/moai/test.lua");
+    	
+    	 SharedPreferences settings = getSharedPreferences("settings", 0);
+         String url=settings.getString("url","");  
+    	
+        if (url==""){url="http://www.innovationtech.co.uk/moai/test.lua";}
+    	input.setText(url);
     	alert.setView(input);
     	alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
     	public void onClick(DialogInterface dialog, int whichButton) {
     	txtInput = input.getText().toString().trim();
 	    
     	if (!txtInput.equals("")){
+    		SharedPreferences settings = getSharedPreferences("settings", 0);
+
+            SharedPreferences.Editor editor = settings.edit();
+		      editor.putString("url", txtInput);
+		      // Commit the edits!
+		      editor.commit();
+            
     	File outputFile = new File(getFilesDir ().getAbsolutePath (), "/lua/environment.lua");
 
 			if(outputFile.exists()) {		  outputFile.delete();}
